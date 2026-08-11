@@ -279,7 +279,7 @@
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
     .calendar-day-head { text-align: center; font-weight: 600; font-size: 0.65rem; color: var(--text-muted); padding: 2px; }
     .calendar-day {
-      min-height: 40px; max-height: 46px;
+      min-height: 52px; max-height: 60px;
       background: rgba(18, 18, 20, 0.6);
       border: 1px solid var(--bg-card-border);
       border-radius: var(--radius-sm);
@@ -335,7 +335,7 @@
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 8px;
-      margin-bottom: 10px;
+      margin-bottom: 6px;
     }
     .exercise-block {
       background: rgba(9, 9, 11, 0.6);
@@ -350,7 +350,7 @@
       border-color: rgba(56, 189, 248, 0.3);
       background: rgba(56, 189, 248, 0.03);
     }
-    .exercise-block-header { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+    .exercise-block-header { display: flex; justify-content: space-between; align-items: center; gap: 4px; }
     .exercise-block-header select { flex: 1; font-weight: 600; color: var(--accent); padding: 3px; font-size: 0.7rem; }
     .exercise-block.calisthenics-block .exercise-block-header select { color: var(--ab-accent); }
     .sets-container { display: flex; flex-direction: column; gap: 3px; }
@@ -689,7 +689,7 @@
       </div>
       
       <form id="workout-form" onsubmit="saveWorkoutLog(event)">
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px;">
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 10px;">
           <div class="input-group">
             <label>Date</label>
             <input type="date" id="log-date" class="input-control" required onchange="onDateChanged()">
@@ -706,11 +706,7 @@
               <option value="Rest">Rest Day</option>
             </select>
           </div>
-        </div>
-
-        <div id="modal-workout-details">
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px;">
-            <div class="input-group">
+		  <div class="input-group">
               <label>Target Split</label>
               <select id="log-split-select" class="input-control" onchange="onSplitSelectChange()">
                 <option value="Chest + Tricep">Chest + Tricep</option>
@@ -723,7 +719,9 @@
               <label>Workout Duration (Minutes)</label>
               <input type="number" id="log-duration" class="input-control" value="60">
             </div>
-          </div>
+        </div>
+
+        <div id="modal-workout-details">
 
           <div style="margin-top: 6px;">
             <h4 style="border-bottom: 1px solid var(--bg-card-border); padding-bottom: 3px; font-size: 0.85rem;">
@@ -732,11 +730,17 @@
 
             <div class="exercise-section-header" id="header-muscle-1">Muscle Group 1</div>
             <div class="exercise-grid-container" id="container-muscle-1"></div>
+            <button type="button" class="btn btn-secondary" style="margin-bottom: 10px; font-size: 0.7rem;" onclick="addNewExerciseBlock('m1')">
+              <i class="fa-solid fa-plus"></i> Add Exercise
+            </button>
 
             <div class="exercise-section-header" id="header-muscle-2">Muscle Group 2</div>
             <div class="exercise-grid-container" id="container-muscle-2"></div>
+            <button type="button" class="btn btn-secondary" style="margin-bottom: 10px; font-size: 0.7rem;" onclick="addNewExerciseBlock('m2')">
+              <i class="fa-solid fa-plus"></i> Add Exercise
+            </button>
 
-            <div class="exercise-section-header calisthenics-header"><i class="fa-solid fa-bolt"></i> Calisthenics & Core (Pushups, Pullups, Squats, Abs)</div>
+            <div class="exercise-section-header calisthenics-header"><i class="fa-solid fa-bolt"></i> Calisthenics & Core (Pushups, Squats, Pullups, Abs)</div>
             <div class="exercise-grid-container" id="container-calisthenics"></div>
           </div>
         </div>
@@ -793,7 +797,7 @@
         "Leg Extension", "Leg Curl", "Lying Leg Curl", "Walking Lunges", 
         "Leg Press", "Hack Squat", "Smith Machine Squat", "Smith Machine Calf Raises"
       ],
-      "Calisthenics": ["PushUps", "PullUps", "Squats", "Abs"]
+      "Calisthenics": ["PushUps", "Squats", "PullUps", "Abs"]
     };
 
     const SPLIT_MAPPING = {
@@ -897,24 +901,52 @@
         const m1List = EXERCISE_DATABASE[mapping.m1] || [];
         const m2List = EXERCISE_DATABASE[mapping.m2] || [];
 
-        for(let i = 0; i < 4; i++) {
-          const defaultEx = m1List[i] || "";
-          const saved = savedExercises.find(ex => ex.name === defaultEx) || savedExercises[i] || {};
+        const savedM1 = savedExercises.filter(ex => m1List.includes(ex.name) || ex.muscleGroup === mapping.m1);
+        const savedM2 = savedExercises.filter(ex => m2List.includes(ex.name) || ex.muscleGroup === mapping.m2);
+
+        const countM1 = savedM1.length > 0 ? savedM1.length : 4;
+        const countM2 = savedM2.length > 0 ? savedM2.length : 4;
+
+        for(let i = 0; i < countM1; i++) {
+          const defaultEx = m1List[i] || m1List[0];
+          const saved = savedM1[i] || {};
           c1.appendChild(createExerciseBlock(m1List, mapping.m1, saved.name || defaultEx, saved.sets || [], false));
         }
 
-        for(let i = 0; i < 4; i++) {
-          const defaultEx = m2List[i] || "";
-          const saved = savedExercises.find(ex => ex.name === defaultEx) || savedExercises[i + 4] || {};
+        for(let i = 0; i < countM2; i++) {
+          const defaultEx = m2List[i] || m2List[0];
+          const saved = savedM2[i] || {};
           c2.appendChild(createExerciseBlock(m2List, mapping.m2, saved.name || defaultEx, saved.sets || [], false));
         }
       }
 
-      const calisthenicsItems = ["PushUps", "PullUps", "Squats", "Abs"];
+      const calisthenicsItems = ["PushUps", "Squats", "PullUps", "Abs"];
       calisthenicsItems.forEach(exName => {
-        const savedEx = savedExercises.find(ex => ex.name === exName) || { name: exName, sets: [{reps: 15}, {reps: 15}, {reps: 15}] };
+        const savedEx = savedExercises.find(ex => ex.name === exName) || { name: exName, sets: [{reps: 15}, {reps: 15}, {reps: 15}, {reps: 15}] };
         cCalisthenics.appendChild(createExerciseBlock([exName], "Calisthenics", exName, savedEx.sets || [], true));
       });
+    }
+
+    function addNewExerciseBlock(groupKey) {
+      const splitName = document.getElementById('log-split-select').value;
+      const mapping = SPLIT_MAPPING[splitName];
+      if (!mapping || !mapping.m1) return;
+
+      const targetMuscle = groupKey === 'm1' ? mapping.m1 : mapping.m2;
+      const containerId = groupKey === 'm1' ? 'container-muscle-1' : 'container-muscle-2';
+      const container = document.getElementById(containerId);
+
+      const exerciseOptions = EXERCISE_DATABASE[targetMuscle] || [];
+      const defaultExName = exerciseOptions[0] || "";
+
+      const newBlock = createExerciseBlock(exerciseOptions, targetMuscle, defaultExName, [
+        { reps: 15, weight: 0 },
+        { reps: 15, weight: 0 },
+        { reps: 15, weight: 0 },
+        { reps: 15, weight: 0 }
+      ], false);
+
+      container.appendChild(newBlock);
     }
 
     function createExerciseBlock(exerciseOptions, muscleGroup, selectedExName, savedSets = [], isCalisthenics = false) {
@@ -926,20 +958,27 @@
         `<option value="${ex}" ${ex === selectedExName ? 'selected' : ''}>${ex}</option>`
       ).join('');
 
+      const deleteBtnHtml = !isCalisthenics ? `
+        <button type="button" class="btn btn-danger" style="padding: 2px 5px; font-size: 0.65rem;" onclick="removeExerciseBlock(this)" title="Remove Exercise">
+          <i class="fa-solid fa-minus"></i>
+        </button>` : '';
+
       block.innerHTML = `
         <div class="exercise-block-header">
           <select class="input-control ex-name-select" ${isCalisthenics ? 'disabled' : ''}>
             ${optionsHtml}
           </select>
-          <button type="button" class="btn btn-secondary" style="padding: 2px 5px; font-size: 0.65rem;" onclick="addSetRow(this, ${isCalisthenics})">
+          <button type="button" class="btn btn-secondary" style="padding: 2px 5px; font-size: 0.65rem;" onclick="addSetRow(this, ${isCalisthenics})" title="Add Set">
             <i class="fa-solid fa-plus"></i> Set
           </button>
+          ${deleteBtnHtml}
         </div>
         <div class="sets-container"></div>
       `;
 
       const setsContainer = block.querySelector('.sets-container');
       const initialSets = savedSets.length > 0 ? savedSets : [
+        { reps: 15, weight: 0 },
         { reps: 15, weight: 0 },
         { reps: 15, weight: 0 },
         { reps: 15, weight: 0 }
@@ -950,6 +989,11 @@
       });
 
       return block;
+    }
+
+    function removeExerciseBlock(btn) {
+      const block = btn.closest('.exercise-block');
+      block.remove();
     }
 
     function createSetRowHtml(setNum, reps = 15, weight = 0, isCalisthenics = false) {
@@ -1124,9 +1168,11 @@
         let weightDisplay = measurement && measurement.weight ? `${measurement.weight.toFixed(1)} kg` : '--';
         
         if (workout && workout.exercises && workout.exercises.length > 0) {
+          const totalExercises = workout.exercises.length;
+          
           let exerciseHtml = workout.exercises.map((ex, idx) => {
             const isCalisthenics = ex.muscleGroup === 'Calisthenics' || ["PushUps", "PullUps", "Squats", "Abs"].includes(ex.name);
-            const isHighlighted = idx >= 8;
+            const isHighlighted = idx >= (totalExercises - 4);
             const nameColor = isHighlighted ? 'color: var(--ab-accent); font-weight: 700;' : '';
             
             if (isCalisthenics) {
@@ -1259,7 +1305,6 @@
       container.innerHTML = htmlContent;
     }
 
-    /* MONTHLY MEASUREMENTS: 12 MONTHS AS ROWS WITH UPDATED COLUMNS */
     function renderMeasurementTable() {
       const tbody = document.getElementById('measurement-table-body');
       const year = parseInt(document.getElementById('measurements-year-select').value);
@@ -1453,6 +1498,13 @@
       for (let day = 1; day <= totalDays; day++) {
         const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         const workout = appData.workouts ? appData.workouts.find(w => w.date === dateStr) : null;
+        
+        // Find measurement/weight for this specific date
+        const measurement = appData.measurements ? appData.measurements.find(m => m.date === dateStr) : null;
+        let weightTag = '';
+        if (measurement && measurement.weight) {
+          weightTag = `<div style="font-size: 0.75rem; color: var(--ab-accent); text-align: center; font-weight: 600;">${measurement.weight.toFixed(1)}kg</div>`;
+        }
 
         let statusTag = '';
         if(workout) {
@@ -1463,6 +1515,7 @@
         container.innerHTML += `
           <div class="calendar-day ${dateStyleClass}" onclick="openWorkoutModal('${dateStr}')">
             <span class="day-num">${day}</span>
+            ${weightTag}
             ${statusTag}
           </div>
         `;
