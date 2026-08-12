@@ -765,7 +765,8 @@
       "Chest": [
         "Dumbell Chest Press", "Barbell Chest Press", "Smith Machine Chest Press", 
         "Smith Machine Incline Chest Press", "Dumbbell Incline Chest Press", "Barbell Incline Chest Press", 
-        "Pec Fly Machine", "Dumbbell Close Grip Press", "Cable Chest Fly", "Chest Dips", "Smith Machine Decline Chest Press"
+        "Pec Fly Machine", "Dumbbell Incline Flyes", "Dumbbell Pullover", "Dumbbell Flyes", 
+		"Dumbbell Close Grip Press", "Cable Chest Fly", "Chest Dips", "Smith Machine Decline Chest Press"
       ],
       "Triceps": [
         "Dumbbell Overhead Triceps", "Dumbbell Kickbacks", "Triceps Pushdown (Cable Bar)", 
@@ -776,21 +777,21 @@
         "Lat Pulldown", "Behind Neck Lat Pull Down", "Reverse Grip Lat Pulldown", 
         "Lat Pulldown Close", "Lat Pulldown Medium", "Lat Pulldown Wide", 
         "Seated Rows", "Barbell Bent-Over Row", "Straight Arm Pulldown", 
-        "One Arm Dumbbell Row", "T-Bar Row", "Stiff Arm Pull Down", "Single Arm Cable Rows"
+        "One Arm Dumbbell Row", "T-Bar Row", "Back Extension", "Stiff Arm Pull Down", "Single Arm Cable Rows"
       ],
       "Biceps": [
         "Barbell Bicep Curl", "Dumbbell Bicep Curl", "Dumbbell Hammer Curl", 
         "Dumbbell Hammer Preacher Curl", "Machine Preacher Curl", "Barbell Preacher Curl", 
-        "Dumbbell Preacher Curl", "Chin-ups", "Incline Dumbbell Curl", 
+        "Dumbbell Preacher Curl", "Dumbbell Concentration Curl", "Chin-ups", "Incline Dumbbell Curl", 
         "Decline Dumbbell Bench Press", "Cable Bicep Curl", "EZ Barbell Curl"
       ],
       "Shoulders": [
         "Arnold Press", "Incline Bench Reverse Fly", "Dumbbell Shoulder Press", 
         "Barbell Shoulder Press", "Smith Machine Shoulder Press", "Dumbbell Front Raise", 
-        "Barbell Front Raise", "Cable Front Raise", "Rope Front Raise", 
+        "Barbell Front Raise", "Cable Front Raise", "Rope Front Raise", "Dumbbell Lateral Raise", 
         "Dumbbell Upright Row", "Barbell Upright Row", "Cable Upright Row", "Rope Upright Row", 
         "Dumbbell Shrugs", "Bent Over Dumbbell Reverse Fly", "Face Pull", "Poliquin Lateral Raise", 
-        "Dumbbell Rear Delt Fly", "Machine Shoulder Press (Reverse)"
+        "Rear Delt", "Dumbbell Rear Delt Fly", "Machine Shoulder Press (Reverse)"
       ],
       "Legs": [
         "Romanian Deadlift (RDL)", "Dumbbell Sumo Squats", "Dumbbell Goblet Squats", 
@@ -922,7 +923,7 @@
 
       const calisthenicsItems = ["PushUps", "Squats", "PullUps", "Abs"];
       calisthenicsItems.forEach(exName => {
-        const savedEx = savedExercises.find(ex => ex.name === exName) || { name: exName, sets: [{reps: 15}, {reps: 15}, {reps: 15}, {reps: 15}] };
+        const savedEx = savedExercises.find(ex => ex.name === exName) || { name: exName, sets: [{reps: 25}, {reps: 25}, {reps: 25}, {reps: 25}] };
         cCalisthenics.appendChild(createExerciseBlock([exName], "Calisthenics", exName, savedEx.sets || [], true));
       });
     }
