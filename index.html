@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -279,7 +280,7 @@
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
     .calendar-day-head { text-align: center; font-weight: 600; font-size: 0.65rem; color: var(--text-muted); padding: 2px; }
     .calendar-day {
-      min-height: 52px; max-height: 60px;
+      min-height: 58px; max-height: 58px;
       background: rgba(18, 18, 20, 0.6);
       border: 1px solid var(--bg-card-border);
       border-radius: var(--radius-sm);
@@ -408,6 +409,13 @@
       <h1>Muscle Tracker</h1>
     </a>
     <ul class="nav-links">
+	  <li class="nav-item">
+		<a href="inde.html" style="text-decoration: none;">
+		  <button type="button">
+			<i class="fa-solid fa-egg" style="color: var(--protein-accent, #f59e0b);"></i> Protein Tracker
+		  </button>
+		</a>
+	  </li>
       <li class="nav-item active"><button onclick="switchView('dashboard')"><i class="fa-solid fa-chart-line"></i> Dashboard</button></li>
       <li class="nav-item"><button onclick="switchView('calendar')"><i class="fa-solid fa-calendar-days"></i> Calendar</button></li>
       <li class="nav-item"><button onclick="switchView('workout-log')"><i class="fa-solid fa-clipboard-list"></i> Workout Log</button></li>
