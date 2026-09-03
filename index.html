@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1122,13 +1121,13 @@
       if(existing) {
         document.getElementById('log-status').value = existing.status;
         document.getElementById('log-split-select').value = existing.split || defaultSplit;
-        document.getElementById('log-duration').value = existing.duration || 60;
+        document.getElementById('log-duration').value = existing.duration || 120;
         document.getElementById('log-notes').value = existing.notes || '';
         renderModalExerciseSlots(existing.split || defaultSplit, existing.exercises || []);
       } else {
         document.getElementById('log-status').value = 'Completed';
         document.getElementById('log-split-select').value = defaultSplit;
-        document.getElementById('log-duration').value = 60;
+        document.getElementById('log-duration').value = 120;
         document.getElementById('log-notes').value = '';
         renderModalExerciseSlots(defaultSplit, []);
       }
