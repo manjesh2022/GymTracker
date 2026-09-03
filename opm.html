@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>One Punch Man Workout Tracker</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f1016;
+            --card-bg: #181a24;
+            --card-border: #262938;
+            --primary: #ff334b;
+            --primary-glow: rgba(255, 51, 75, 0.3);
+            --success: #00e676;
+            --success-glow: rgba(0, 230, 118, 0.2);
+            --warning: #ff9100;
+            --warning-glow: rgba(255, 145, 0, 0.2);
+            --text-main: #f5f6fa;
+            --text-muted: #8c92a4;
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 520px;
+            padding-bottom: 30px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 14px;
+        }
+
+        header h1 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+
+        /* Top 30-Day Scrollable Mobile-Friendly Slider Map */
+        .slider-map-container {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 12px;
+            margin-bottom: 14px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+
+        .slider-map-title {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .slider-map-track {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding-bottom: 4px;
+            scroll-behavior: smooth;
+        }
+
+        .slider-map-track::-webkit-scrollbar {
+            display: none;
+        }
+
+        .map-day-pill {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--card-border);
+            text-align: center;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            min-width: 38px;
+            height: 38px;
+            flex-shrink: 0;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .map-day-pill.active-view {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(255, 51, 75, 0.1);
+        }
+
+        .map-day-pill.completed-day {
+            background: var(--success);
+            border-color: var(--success);
+            color: #0f1016;
+            font-weight: 700;
+        }
+
+        .map-day-pill.incomplete-day {
+            background: var(--warning);
+            border-color: var(--warning);
+            color: #0f1016;
+            font-weight: 700;
+        }
+
+        /* View Toggle Tabs */
+        .view-tabs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            padding: 5px;
+            border-radius: var(--radius);
+            margin-bottom: 14px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.85rem;
+            padding: 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 15px var(--primary-glow);
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 12px;
+            text-align: center;
+        }
+
+        .stat-card h4 {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-card .stat-value {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-top: 2px;
+            color: var(--text-main);
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            margin-bottom: 14px;
+        }
+
+        .view-section {
+            display: none;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            margin-bottom: 16px;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+        }
+
+        .progress-bar-bg {
+            background: var(--card-border);
+            border-radius: 20px;
+            height: 8px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            background: var(--success);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 12px var(--success-glow);
+            border-radius: 20px;
+        }
+
+        /* Day Navigation Bar */
+        .day-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 6px 10px;
+            margin-bottom: 16px;
+        }
+
+        .day-nav button {
+            background: none;
+            border: none;
+            color: var(--text-main);
+            font-weight: 600;
+            cursor: pointer;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            transition: background 0.2s;
+        }
+
+        .day-nav button:active {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .day-select-wrapper select {
+            background: transparent;
+            border: none;
+            color: var(--primary);
+            font-size: 1rem;
+            font-weight: 700;
+            outline: none;
+            cursor: pointer;
+            text-align-last: center;
+        }
+
+        /* Exercise List */
+        .exercise-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .exercise-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 14px;
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            background: rgba(255,255,255,0.01);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .exercise-item.completed {
+            background: rgba(0, 230, 118, 0.05);
+            border-color: rgba(0, 230, 118, 0.3);
+        }
+
+        .exercise-info h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .exercise-info p {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Custom Checkbox */
+        .checkbox-container {
+            position: relative;
+            width: 26px;
+            height: 26px;
+            flex-shrink: 0;
+            margin-left: 10px;
+        }
+
+        .exercise-item input[type="checkbox"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 26px;
+            height: 26px;
+            border: 2px solid var(--card-border);
+            border-radius: 8px;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .exercise-item input[type="checkbox"]:checked {
+            background-color: var(--success);
+            border-color: var(--success);
+        }
+
+        .exercise-item input[type="checkbox"]:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #000;
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        /* Monthly Analytics View */
+        .monthly-header {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 14px;
+            color: var(--text-main);
+        }
+
+        .metric-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .metric-item {
+            background: rgba(255,255,255,0.01);
+            border: 1px solid var(--card-border);
+            padding: 12px 14px;
+            border-radius: 12px;
+        }
+
+        .metric-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .metric-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .metric-count {
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .metric-bar-bg {
+            background: var(--card-border);
+            height: 7px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .metric-bar-fill {
+            background: var(--primary);
+            height: 100%;
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        /* Footer Actions / Icon Toolbar */
+        .footer-actions {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .icon-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            font-size: 1.1rem;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .icon-btn:hover {
+            border-color: var(--text-muted);
+            transform: scale(1.05);
+        }
+
+        #import-file-input {
+            display: none;
+        }
+
+        /* Victory Modal Popup */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 16, 22, 0.85);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .victory-card {
+            background: var(--card-bg);
+            border: 2px solid var(--success);
+            border-radius: var(--radius);
+            padding: 24px;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 0 40px var(--success-glow);
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .victory-card h2 {
+            color: var(--success);
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+
+        .victory-card p {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .victory-btn {
+            background: var(--success);
+            color: #0f1016;
+            border: none;
+            font-weight: 700;
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: opacity 0.2s;
+        }
+
+        .victory-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>One Punch Man</h1>
+        <p>Become Stronger Every Single Day</p>
+    </header>
+
+    <div class="slider-map-container">
+        <div class="slider-map-title">30-Day Consistency Map</div>
+        <div class="slider-map-track" id="slider-map-track"></div>
+    </div>
+
+    <div class="view-tabs">
+        <button class="tab-btn active" id="tab-daily" onclick="switchView('daily')">Daily Workout</button>
+        <button class="tab-btn" id="tab-monthly" onclick="switchView('monthly')">Monthly Progress</button>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <h4>Current Streak</h4>
+            <div class="stat-value" id="streak-count">0 Days</div>
+        </div>
+        <div class="stat-card">
+            <h4>Completed Days</h4>
+            <div class="stat-value" id="completed-count">0 / 30</div>
+        </div>
+    </div>
+
+    <div id="view-daily" class="view-section active">
+        <div class="card">
+            <div class="progress-container">
+                <div class="progress-info">
+                    <span id="progress-text">Today's Progress</span>
+                    <span id="progress-percentage">0.00%</span>
+                </div>
+                <div class="progress-bar-bg">
+                    <div id="progress-bar-fill" class="progress-bar-fill"></div>
+                </div>
+            </div>
+
+            <div class="day-nav">
+                <button id="prev-day">Prev</button>
+                <div class="day-select-wrapper">
+                    <select id="day-select"></select>
+                </div>
+                <button id="next-day">Next</button>
+            </div>
+
+            <div class="exercise-list" id="exercise-list"></div>
+        </div>
+    </div>
+
+    <div id="view-monthly" class="view-section">
+        <div class="card">
+            <div class="monthly-header">30-Day Milestone Overview</div>
+            <div class="metric-list" id="metric-list"></div>
+        </div>
+    </div>
+
+    <div class="footer-actions">
+        <button class="icon-btn" id="btn-export" title="Export Progress Data">📤</button>
+        <button class="icon-btn" id="btn-import" title="Import Progress Data">📥</button>
+        <button class="icon-btn" id="reset-data" title="Reset All Data">🗑️</button>
+        <input type="file" id="import-file-input" accept=".json">
+    </div>
+</div>
+
+<div class="modal-overlay" id="victory-modal">
+    <div class="victory-card">
+        <h2>⚡ 30-Day Challenge Conquered! ⚡</h2>
+        <p>Incredible job! You survived the absolute rigor of the One Punch Man training regimen. You have achieved total mind and body mastery.</p>
+        <button class="victory-btn" onclick="closeVictoryModal()">Continue Your Legacy</button>
+    </div>
+</div>
+
+<script>
+    const exercisesConfig = [
+        { id: 'pushups', name: '100 Push-ups', desc: '5 × 20 • Chest, Shoulders, Triceps', targetCount: 3000, unit: 'Reps' },
+        { id: 'squats', name: '100 Squats', desc: '5 × 20 • Quads, Hamstrings, Glutes', targetCount: 3000, unit: 'Reps' },
+        { id: 'situps', name: '100 Sit-ups', desc: '5 × 20 • Abs & Core Strength', targetCount: 3000, unit: 'Reps' },
+        { id: 'run', name: '10 km Run', desc: '5–10 min • Cardio & Fat Burning', targetCount: 300, unit: 'km' },
+        { id: 'legraises', name: '60 Hanging Leg Raises', desc: '4 × 15 • Lower Abs', targetCount: 1800, unit: 'Reps' },
+        { id: 'plank', name: '3-5 min Plank', desc: '3 × 60sec • Core Stability', targetCount: 150, unit: 'Minutes' }
+    ];
+
+    let currentDay = 1;
+    const totalDays = 30;
+    let workoutData = JSON.parse(localStorage.getItem('opm_workout_data')) || {};
+
+    const daySelect = document.getElementById('day-select');
+    const exerciseList = document.getElementById('exercise-list');
+    const progressBarFill = document.getElementById('progress-bar-fill');
+    const progressPercentage = document.getElementById('progress-percentage');
+    const sliderMapTrack = document.getElementById('slider-map-track');
+    const streakCountElem = document.getElementById('streak-count');
+    const completedCountElem = document.getElementById('completed-count');
+    const metricList = document.getElementById('metric-list');
+    const importFileInput = document.getElementById('import-file-input');
+    const victoryModal = document.getElementById('victory-modal');
+
+    for (let i = 1; i <= totalDays; i++) {
+        let option = document.createElement('option');
+        option.value = i;
+        option.textContent = `Day ${i < 10 ? '0' + i : i}`;
+        daySelect.appendChild(option);
+    }
+
+    function getDayData(day) {
+        if (!workoutData[day]) workoutData[day] = {};
+        return workoutData[day];
+    }
+
+    function switchView(viewName) {
+        document.getElementById('tab-daily').classList.toggle('active', viewName === 'daily');
+        document.getElementById('tab-monthly').classList.toggle('active', viewName === 'monthly');
+        document.getElementById('view-daily').classList.toggle('active', viewName === 'daily');
+        document.getElementById('view-monthly').classList.toggle('active', viewName === 'monthly');
+        
+        if (viewName === 'monthly') {
+            renderMonthlyProgress();
+        }
+    }
+
+    function calculateStats() {
+        let completedDaysTotal = 0;
+        let currentStreak = 0;
+        let streakActive = true;
+
+        for (let i = 1; i <= totalDays; i++) {
+            let dData = workoutData[i] || {};
+            let allDone = exercisesConfig.every(ex => dData[ex.id]);
+            if (allDone && Object.keys(dData).length > 0) {
+                completedDaysTotal++;
+                if (streakActive) currentStreak++;
+            } else {
+                streakActive = false;
+            }
+        }
+        completedCountElem.textContent = `${completedDaysTotal} / ${totalDays}`;
+        streakCountElem.textContent = `${currentStreak} ${currentStreak === 1 ? 'Day' : 'Days'}`;
+
+        if (completedDaysTotal === totalDays && !localStorage.getItem('opm_victory_shown')) {
+            victoryModal.classList.add('active');
+            localStorage.setItem('opm_victory_shown', 'true');
+        }
+    }
+
+    function closeVictoryModal() {
+        victoryModal.classList.remove('active');
+    }
+
+    function renderApp() {
+        daySelect.value = currentDay;
+        exerciseList.innerHTML = '';
+        let dayData = getDayData(currentDay);
+        let completedCount = 0;
+
+        exercisesConfig.forEach(ex => {
+            const isChecked = !!dayData[ex.id];
+            if (isChecked) completedCount++;
+
+            const item = document.createElement('div');
+            item.className = `exercise-item ${isChecked ? 'completed' : ''}`;
+            
+            item.innerHTML = `
+                <div class="exercise-info">
+                    <h3>${ex.name}</h3>
+                    <p>${ex.desc}</p>
+                </div>
+                <div class="checkbox-container">
+                    <input type="checkbox" data-id="${ex.id}" ${isChecked ? 'checked' : ''}>
+                </div>
+            `;
+
+            item.addEventListener('click', (e) => {
+                if (e.target.tagName !== 'INPUT') {
+                    const checkbox = item.querySelector('input[type="checkbox"]');
+                    checkbox.checked = !checkbox.checked;
+                    updateExerciseState(ex.id, checkbox.checked);
+                }
+            });
+
+            exerciseList.appendChild(item);
+        });
+
+        let percentage = (completedCount / exercisesConfig.length) * 100;
+        progressBarFill.style.width = `${percentage}%`;
+        progressPercentage.textContent = `${percentage.toFixed(2)}%`;
+
+        renderSliderMap();
+        calculateStats();
+    }
+
+    function updateExerciseState(exId, isChecked) {
+        let dayData = getDayData(currentDay);
+        dayData[exId] = isChecked;
+        localStorage.setItem('opm_workout_data', JSON.stringify(workoutData));
+        renderApp();
+    }
+
+    function renderSliderMap() {
+        sliderMapTrack.innerHTML = '';
+        for (let i = 1; i <= totalDays; i++) {
+            let pill = document.createElement('div');
+            pill.className = `map-day-pill`;
+            if (i === currentDay) pill.classList.add('active-view');
+
+            let dData = workoutData[i] || {};
+            let checkedEntries = Object.values(dData).filter(Boolean).length;
+            let allDone = exercisesConfig.every(ex => dData[ex.id]);
+
+            if (allDone && Object.keys(dData).length > 0) {
+                pill.classList.add('completed-day');
+            } else if (checkedEntries > 0) {
+                pill.classList.add('incomplete-day');
+            }
+
+            pill.textContent = i;
+            pill.addEventListener('click', () => {
+                currentDay = i;
+                renderApp();
+            });
+            sliderMapTrack.appendChild(pill);
+        }
+
+        setTimeout(() => {
+            const activePill = sliderMapTrack.querySelector('.active-view');
+            if (activePill) {
+                activePill.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }
+        }, 50);
+    }
+
+    function renderMonthlyProgress() {
+        metricList.innerHTML = '';
+        let exerciseCounts = {};
+        exercisesConfig.forEach(ex => exerciseCounts[ex.id] = 0);
+
+        for (let i = 1; i <= totalDays; i++) {
+            let dData = workoutData[i] || {};
+            exercisesConfig.forEach(ex => {
+                if (dData[ex.id]) exerciseCounts[ex.id]++;
+            });
+        }
+
+        exercisesConfig.forEach(ex => {
+            let daysDone = exerciseCounts[ex.id];
+            let currentProgressValue = 0;
+            let targetValue = ex.targetCount;
+
+            if (ex.id === 'pushups') currentProgressValue = daysDone * 100;
+            else if (ex.id === 'squats') currentProgressValue = daysDone * 100;
+            else if (ex.id === 'situps') currentProgressValue = daysDone * 100;
+            else if (ex.id === 'run') currentProgressValue = daysDone * 10;
+            else if (ex.id === 'legraises') currentProgressValue = daysDone * 60;
+            else if (ex.id === 'plank') currentProgressValue = daysDone * 5;
+
+            let percent = Math.min(100, (currentProgressValue / targetValue) * 100);
+
+            let metricItem = document.createElement('div');
+            metricItem.className = 'metric-item';
+            metricItem.innerHTML = `
+                <div class="metric-info">
+                    <span class="metric-title">${ex.name.split(' ')[1] || ex.name} Cumulative</span>
+                    <span class="metric-count">${currentProgressValue} / ${targetValue} ${ex.unit}</span>
+                </div>
+                <div class="metric-bar-bg">
+                    <div class="metric-bar-fill" style="width: ${percent}%"></div>
+                </div>
+            `;
+            metricList.appendChild(metricItem);
+        });
+    }
+
+    daySelect.addEventListener('change', (e) => {
+        currentDay = parseInt(e.target.value);
+        renderApp();
+    });
+
+    document.getElementById('prev-day').addEventListener('click', () => {
+        if (currentDay > 1) {
+            currentDay--;
+            renderApp();
+        }
+    });
+
+    document.getElementById('next-day').addEventListener('click', () => {
+        if (currentDay < totalDays) {
+            currentDay++;
+            renderApp();
+        }
+    });
+
+    exerciseList.addEventListener('change', (e) => {
+        if (e.target.type === 'checkbox') {
+            let exId = e.target.getAttribute('data-id');
+            updateExerciseState(exId, e.target.checked);
+        }
+    });
+
+    document.getElementById('btn-export').addEventListener('click', () => {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(workoutData, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", "opm_workout_progress.json");
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    });
+
+    document.getElementById('btn-import').addEventListener('click', () => {
+        importFileInput.click();
+    });
+
+    importFileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            try {
+                const parsedData = JSON.parse(event.target.result);
+                if (typeof parsedData === 'object' && parsedData !== null) {
+                    workoutData = parsedData;
+                    localStorage.setItem('opm_workout_data', JSON.stringify(workoutData));
+                    renderApp();
+                    if(document.getElementById('view-monthly').classList.contains('active')) {
+                        renderMonthlyProgress();
+                    }
+                    alert('Progress successfully imported!');
+                } else {
+                    alert('Invalid backup file format.');
+                }
+            } catch (err) {
+                alert('Error parsing JSON file.');
+            }
+            importFileInput.value = '';
+        };
+        reader.readAsText(file);
+    });
+
+    document.getElementById('reset-data').addEventListener('click', () => {
+        if (confirm('Are you sure you want to reset all your challenge data?')) {
+            localStorage.removeItem('opm_workout_data');
+            localStorage.removeItem('opm_victory_shown');
+            workoutData = {};
+            renderApp();
+            if(document.getElementById('view-monthly').classList.contains('active')) {
+                renderMonthlyProgress();
+            }
+        }
+    });
+
+    renderApp();
+</script>
+
+</body>
+</html>
